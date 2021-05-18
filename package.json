@@ -28,9 +28,12 @@
     "apollo-server-express": "2.24.0",
     "graphql": "15.5.0",
     "graphql-tools": "7.0.5",
+    "html-metadata-parser": "1.0.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^6.6.6"
+    "rxjs": "^6.6.6",
+    "type-graphql": "1.1.1",
+    "url-metadata": "2.5.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",

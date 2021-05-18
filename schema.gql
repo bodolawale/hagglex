@@ -1,0 +1,13 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Metadata {
+  title: String!
+  description: String!
+  largestImage: String!
+}
+
+type Query {
+  Metadata(url: String!): Metadata!
+}
