@@ -22,8 +22,6 @@ COPY . .
 
 COPY --from=development /usr/src/app/dist ./dist
 
-EXPOSE 3000/udp
-
 EXPOSE 3000/tcp
 
 CMD ["node", "dist/main"]
