@@ -15,13 +15,7 @@ export class MetadataService {
 
     const metadata = await meta.parser(url);
 
-    let largestImage = null;
-
-    if (metadata.images.length > 0) {
-      largestImage = this.getLargestImage(metadata.images);
-    } else if (metadata.og.images.length > 0) {
-      largestImage = this.getLargestImage(metadata.og.images);
-    }
+    const largestImage = this.getImage(metadata);
 
     const res = {
       title: metadata.meta.title || metadata.og.title,
@@ -29,7 +23,7 @@ export class MetadataService {
       largestImage,
     };
 
-    await this.cacheManager.set(url, JSON.stringify(res), { ttl: 60 });
+    await this.cacheData(url, res);
 
     return res;
   }
@@ -40,6 +34,14 @@ export class MetadataService {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  private getImage(metadata: any) {
+    if (metadata.images.length > 0) {
+      return this.getLargestImage(metadata.images);
+    } else if (metadata.og.images.length > 0) {
+      return this.getLargestImage(metadata.og.images);
     }
   }
 
@@ -62,5 +64,9 @@ export class MetadataService {
     const cachedData: string = await this.cacheManager.get(url);
     if (!cachedData) return;
     return JSON.parse(cachedData);
+  }
+
+  private async cacheData(url: string, data: any): Promise<void> {
+    await this.cacheManager.set(url, JSON.stringify(data), { ttl: 60 });
   }
 }
