@@ -45,6 +45,14 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Running the app using docker
+
+```bash
+$ docker build <image_name> .
+
+$ docker run <image_name>
+```
+
 ## Test
 
 ```bash
