@@ -5,9 +5,15 @@ export class Metadata {
   @Field()
   title: string;
 
-  @Field()
+  @Field({ nullable: true })
   description?: string;
 
-  @Field()
+  @Field({ nullable: true })
   largestImage?: string;
 }
+
+export type Image = {
+  url: string;
+  width: number;
+  height: number;
+};

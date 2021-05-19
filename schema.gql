@@ -4,8 +4,8 @@
 
 type Metadata {
   title: String!
-  description: String!
-  largestImage: String!
+  description: String
+  largestImage: String
 }
 
 type Query {

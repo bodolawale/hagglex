@@ -1,6 +1,5 @@
-import { Metadata } from './metadata.model';
+import { Metadata, Image } from './metadata.model';
 import { Injectable } from '@nestjs/common';
-import urlMetadata from 'url-metadata';
 import meta from 'html-metadata-parser';
 
 @Injectable()
@@ -8,17 +7,21 @@ export class MetadataService {
   async getMetadata(url: string): Promise<Metadata> {
     if (!this.isValidUrl(url)) throw new Error('URL is not valid');
 
-    const metadata = await urlMetadata(url);
+    const metadata = await meta.parser(url);
+    console.log(metadata);
 
-    const meet = await meta.parser(url);
-    console.log(meet.images);
+    let largestImage = null;
 
-    const largestImage = this.getLargestImage(metadata);
+    if (metadata.images.length > 0) {
+      largestImage = this.getLargestImage(metadata.images);
+    } else if (metadata.og.images.length > 0) {
+      largestImage = this.getLargestImage(metadata.og.images);
+    }
 
     return {
-      title: metadata.title,
-      description: metadata.description,
-      largestImage: metadata.image,
+      title: metadata.meta.title || metadata.og.title,
+      description: metadata.meta.description || metadata.og.description,
+      largestImage,
     };
   }
 
@@ -31,8 +34,18 @@ export class MetadataService {
     }
   }
 
-  private getLargestImage(metadata: any): string {
-    console.log(metadata);
-    return 'Hello';
+  private getLargestImage(images: Image[]): string {
+    let maxSize = -1;
+    let largestImage: Image = null;
+
+    images.forEach((image) => {
+      const imageSize = image.height || 1 * image.width || 1;
+      if (imageSize > maxSize) {
+        largestImage = image;
+        maxSize = imageSize;
+      }
+    });
+
+    return largestImage.url;
   }
 }
