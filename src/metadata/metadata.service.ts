@@ -67,6 +67,7 @@ export class MetadataService {
   }
 
   private async cacheData(url: string, data: any): Promise<void> {
+    // Cache for one minute
     await this.cacheManager.set(url, JSON.stringify(data), { ttl: 60 });
   }
 }
