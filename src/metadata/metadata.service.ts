@@ -1,14 +1,19 @@
 import { Metadata, Image } from './metadata.model';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
 import meta from 'html-metadata-parser';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class MetadataService {
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+
   async getMetadata(url: string): Promise<Metadata> {
     if (!this.isValidUrl(url)) throw new Error('URL is not valid');
 
+    const cachedData = await this.getCachedData(url);
+    if (cachedData) return cachedData;
+
     const metadata = await meta.parser(url);
-    console.log(metadata);
 
     let largestImage = null;
 
@@ -18,11 +23,15 @@ export class MetadataService {
       largestImage = this.getLargestImage(metadata.og.images);
     }
 
-    return {
+    const res = {
       title: metadata.meta.title || metadata.og.title,
       description: metadata.meta.description || metadata.og.description,
       largestImage,
     };
+
+    await this.cacheManager.set(url, JSON.stringify(res), { ttl: 60 });
+
+    return res;
   }
 
   private isValidUrl(url: string) {
@@ -47,5 +56,11 @@ export class MetadataService {
     });
 
     return largestImage.url;
+  }
+
+  private async getCachedData(url: string): Promise<any> {
+    const cachedData: string = await this.cacheManager.get(url);
+    if (!cachedData) return;
+    return JSON.parse(cachedData);
   }
 }
